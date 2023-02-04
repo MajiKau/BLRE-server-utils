@@ -1,21 +1,31 @@
 {
-  "plugins": [
-    "@semantic-release/commit-analyzer",
-    "@semantic-release/release-notes-generator",
-    "@semantic-release/gitlab",
-    ["@semantic-release/changelog", {
-      "changelogFile": "CHANGELOG.md"
-    }],
-    ["@semantic-release/exec", {
-      "verifyReleaseCmd": "echo ${nextRelease.version} > VERSION.txt"
-    }]
-   
-  ],
+  "repositoryUrl": "https://gitlab.com/blrevive/modules/server-utils",
   "branches": [
-    "main", 
+    "main",
     {
-      "name": "development",
+      "name": "beta",
       "prerelease": true
     }
+  ],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    ["@semantic-release/exec", {
+      "publishCmd": "./.gitlab/ci/publish-package.sh ${nextRelease.version}"
+    }],
+    ["@semantic-release/release-notes-generator", {
+      "preset": "angular",
+      "writerOpts": {
+        "commitsSort": ["subject", "scope"]
+      }
+    }],
+    ["@semantic-release/changelog", {
+      "changelogFile": "doc/Changelog.md"
+    }],
+    ["@semantic-release/gitlab", {
+      "assets": [
+          {"path": "doc/Changelog.md", "label": "Changelog"},
+          {"path": "build/Release/server-utils.dll", "label": "server-utils.v${nextRelease.version}.dll"}
+      ]
+    }]
   ]
 }
