@@ -3,10 +3,10 @@
 //   the SDK currently throws alot of warnings which can be ignored
 #pragma warning(disable:4244)
 #define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
 #include <winsock2.h>
 #include <windows.h>
 #include <vector>
-#include <Proxy/Offsets.h>
 #include <SdkHeaders.h>
 
 #include <fstream>
@@ -97,42 +97,40 @@ extern "C" __declspec(dllexport) void ModuleThread()
 
 	serverConfig = serverConfigFromFile();
 
-	std::shared_ptr<Events::Manager> eventManager = Events::Manager::GetInstance();
+	std::shared_ptr<Event::Manager> eventManager = Event::Manager::GetInstance();
 #if 1
 	eventManager->RegisterHandler({
-		Events::ID("*", "IsConfigFiltered"),
-		[=](Events::Info info) {
+		64192, //Events::ID("*", "IsConfigFiltered"),
+		[=](Event::Info info) {
 			backupAndSetBotnamesToGameDefault(serverConfig);
 			applyParametersToGameDefault(serverConfig);
 			applyOneshotHacks(serverConfig);
-		},
-		true,
-		true});
+			return true;
+		}});
 	logDebug("registered oneshot handler for event * IsConfigFiltered");
 #endif
 #if 1
-	eventManager->RegisterHandler({
-		Events::ID("*", "UpdateGameSettings"),
-		[=](Events::Info info) {
-			AFoxGame *game = (AFoxGame *)info.Object;
-			restoreBotnamesToGameDefault(serverConfig);
-		},
-		true,
-		true
-		});
+	auto updateGameSettingsRestoreBotnamesCallback = [=](Event::Info info) {
+		AFoxGame* game = (AFoxGame*)info.Object;
+		restoreBotnamesToGameDefault(serverConfig);
+		return true;
+	};
+
+	eventManager->RegisterHandler({19089, updateGameSettingsRestoreBotnamesCallback });
+	eventManager->RegisterHandler({52580, updateGameSettingsRestoreBotnamesCallback });
 	logDebug("registered oneshot handler for event * UpdateGameSettings");
 #endif
 #if 1
-	eventManager->RegisterHandler({
-		Events::ID("*", "UpdateGameSettings"),
-		[=](Events::Info info) {
-			AFoxGame *game = (AFoxGame *)info.Object;
-			applyRecurringHacks(game, serverConfig);
-			applyParametersToGameObject(game, serverConfig);
-			updateServerInfo(game);
-		},
-		true,
-		});
+	auto updateGameSettingsCallback = [=](Event::Info info) {
+		AFoxGame* game = (AFoxGame*)info.Object;
+		applyRecurringHacks(game, serverConfig);
+		applyParametersToGameObject(game, serverConfig);
+		updateServerInfo(game);
+		return false;
+	};
+
+	eventManager->RegisterHandler({ 19089, updateGameSettingsCallback });
+	eventManager->RegisterHandler({ 52580, updateGameSettingsCallback });
 	logDebug("registered handler for event * UpdateGameSettings");
 #endif
 #if 0
@@ -166,8 +164,8 @@ extern "C" __declspec(dllexport) void InitializeModule(Module::InitData *data)
     Logger::Link(data->Logger);
 
     // initialize event manager
-    // an instance of the manager can be retrieved with Events::Manager::Instance() afterwards
-    Events::Manager::Link(data->EventManager);
+    // an instance of the manager can be retrieved with Event::Manager::Instance() afterwards
+    Event::Manager::Link(data->EventManager);
 
 	// handle get requests
 	data->Server->AddConnectionHandler(Network::RequestType::GET, "/server_info", [&](const httplib::Request &req, httplib::Response &res)
@@ -439,14 +437,14 @@ static void updateServerInfo(AFoxGame* game)
 	serverInfo["TeamList"] = json::array();
 	// there seems to always be a dummy team
 	for (int i = 0; i < (game->NumTeams - 1) && i < (teams.Count - 1); i++){
-		AFoxTeamInfo* team = teams(i);
+		AFoxTeamInfo* team = teams.at(i);
 		serverInfo["TeamList"][i]["PlayerList"] = json::array();
 		serverInfo["TeamList"][i]["BotList"] = json::array();
 		int teamBotCount = 0;
 		int teamPlayerCount = 0;
 		for (int j = 0; j < players.Count; j++)
 		{
-			AFoxPRI* player = (AFoxPRI *)players(j);
+			AFoxPRI* player = (AFoxPRI *)players.at(j);
 			if((void *)team != (void *)player->Team){
 				continue;
 			}
@@ -489,8 +487,8 @@ static void updateServerInfo(AFoxGame* game)
 static void backupAndSetBotnamesToGameDefault(ServerConfig &config){
 	AFoxGame *game = UObject::GetInstanceOf<AFoxGame>(true);
 	for(int i = 0;i < NUM_BOT_NAMES;i++){
-		memcpy(&(config.RandomBotNamesFStringBackup[i * sizeof(FString)]), &(game->RandomBotNames(i)), sizeof(FString));
-		memcpy(&(game->RandomBotNames(i)), &(config.RandomBotNamesFString[i * sizeof(FString)]), sizeof(FString));
+		memcpy(&(config.RandomBotNamesFStringBackup[i * sizeof(FString)]), &(game->RandomBotNames.at(i)), sizeof(FString));
+		memcpy(&(game->RandomBotNames.at(i)), &(config.RandomBotNamesFString[i * sizeof(FString)]), sizeof(FString));
 	}
 }
 
@@ -498,7 +496,7 @@ static void restoreBotnamesToGameDefault(const ServerConfig &config){
 	// replacing TArray is finicky, and FStrings are TArrays, so restore it before problematic uses
 	AFoxGame *game = UObject::GetInstanceOf<AFoxGame>(true);
 	for(int i = 0;i < NUM_BOT_NAMES;i++){
-		memcpy(&(game->RandomBotNames(i)), &(config.RandomBotNamesFStringBackup[i * sizeof(FString)]), sizeof(FString));
+		memcpy(&(game->RandomBotNames.at(i)), &(config.RandomBotNamesFStringBackup[i * sizeof(FString)]), sizeof(FString));
 	}
 }
 
