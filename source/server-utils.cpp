@@ -220,7 +220,7 @@ static std::string getOutputPath(){
 			return outputPath;
 		}
 		else {
-			logError(std::format("{0} exists but it is not a directory", outputPath));
+			logError(fmt::format("{0} exists but it is not a directory", outputPath));
 			return "";
 		}
 		}
@@ -230,7 +230,7 @@ static std::string getOutputPath(){
 			return outputPath;
 		}
 		else {
-			logError(std::format("cannot create directory {0}", outputPath));
+			logError(fmt::format("cannot create directory {0}", outputPath));
 			return "";
 		}
 	}
@@ -239,7 +239,7 @@ static std::string getOutputPath(){
 static void writeConfig(json &toWrite, std::string path){
 	std::ofstream output(path);
 	if(!output.is_open()){
-		logError(std::format("failed writing config to {0}", path));
+		logError(fmt::format("failed writing config to {0}", path));
 		return;
 	}
 	output << toWrite.dump(4) << std::endl;
@@ -251,7 +251,7 @@ static json defaultConfigJson(){
 	json defaultConfig;
 	// defaultConfig["properties"]["MaxIntermissionIdle"] = 3600.0;
 	for(int i = 0;i < NUM_BOT_NAMES; i++){
-		defaultConfig["properties"]["RandomBotNames"][i] = std::format("blrevive bot MK{0}", i);
+		defaultConfig["properties"]["RandomBotNames"][i] = fmt::format("blrevive bot MK{0}", i);
 	}
 	defaultConfig["properties"]["GameRespawnTime"] = 10.0;
 	defaultConfig["properties"]["GameForceRespawnTime"] = 30.0;
@@ -274,7 +274,7 @@ static json getJsonValue(json &input, json &defaultOverlay, std::string category
 	try{
 		val = input[category][param];
 		if(val.is_null()){
-			logWarn(std::format("{0}/{1} not found in config, using default value", category, param));
+			logWarn(fmt::format("{0}/{1} not found in config, using default value", category, param));
 			val = defaultOverlay[category][param];
 		}
 	}catch(json::exception e){
@@ -293,7 +293,7 @@ static ServerConfig serverConfigFromJson(json input){
 		for(int i = 0; i < NUM_BOT_NAMES; i++){
 			json botName = botNameArray[i];
 			if(botName.is_null()){
-				logWarn(std::format("the #{0} bot name is not provided, using default value", i));
+				logWarn(fmt::format("the #{0} bot name is not provided, using default value", i));
 				botName = defaultConfig["properties"]["RandomBotNames"][i];
 			}
 			config.properties.RandomBotNames[i] = botName;
@@ -321,14 +321,14 @@ static ServerConfig serverConfigFromJson(json input){
 static ServerConfig serverConfigFromFile(){
 	std::string outputPath = getOutputPath();
 	if(outputPath.length() == 0){
-		logError(std::format("cannot load config from {0}", outputPath));
+		logError(fmt::format("cannot load config from {0}", outputPath));
 		return serverConfigFromJson(defaultConfigJson());
 	}
 
-	std::string serverConfigPath = std::format("{0}{1}", outputPath, "server_config.json");
+	std::string serverConfigPath = fmt::format("{0}{1}", outputPath, "server_config.json");
 	std::ifstream input(serverConfigPath);
 	if(!input.is_open()){
-		logDebug(std::format("{0} does not exist, writing default config", serverConfigPath));
+		logDebug(fmt::format("{0} does not exist, writing default config", serverConfigPath));
 		json config = defaultConfigJson();
 		writeConfig(config, serverConfigPath);
 		return serverConfigFromJson(config);
@@ -339,7 +339,7 @@ static ServerConfig serverConfigFromFile(){
 		input.close();
 		return serverConfigFromJson(inputJson);
 	}catch(json::exception e){
-		logError(std::format("failed parsing {0}, using default config", serverConfigPath));
+		logError(fmt::format("failed parsing {0}, using default config", serverConfigPath));
 		logError(e.what());
 		input.close();
 		return serverConfigFromJson(defaultConfigJson());
@@ -397,14 +397,14 @@ static void writeServerInfo(){
 		logError("cannot write server_info.json, destination is inaccessible");
 		return;
 	}
-	std::string path = std::format("{0}{1}", outputPath, "server_info.json");
+	std::string path = fmt::format("{0}{1}", outputPath, "server_info.json");
 
 	bool mutexReleased = true;
 	try
 	{
 		std::ofstream output(path);
 		if (!output.is_open()) {
-			logError(std::format("failed writing server info to {0}", path));
+			logError(fmt::format("failed writing server info to {0}", path));
 			return;
 		}
 
@@ -416,7 +416,7 @@ static void writeServerInfo(){
 	}
 	catch (std::exception e)
 	{
-		logError(std::format("failed saving {0}", path));
+		logError(fmt::format("failed saving {0}", path));
 		logError(e.what());
 	};
 }
