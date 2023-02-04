@@ -1,0 +1,8 @@
+{
+    "Name": "server-utils",
+    "Version": "0.0.1",
+    "ProxyVersion": "v1.0.0-beta.3",
+    "SupportsServer": true,
+    "SupportsClient": true
+}
+    
