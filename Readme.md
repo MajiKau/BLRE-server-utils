@@ -41,21 +41,32 @@ after first run, `<blr>/FoxGame/Config/BLRevive/server_utils/server_config.json`
 
 ## supported parameters
 
-| path | description |
-| --- | --- |
-| properties/RandomBotNames/[0-18] | (string) change one of the 19 possible bot names |
-| properties/GameRespawnTime | (float) seconds until a player can click respawn |
-| properties/GameForceRespawnTime | (float) seconds until a player is automatically respawned |
-| properties/GameSpectatorSwitchDelayTime | (float) seconds until a player can switch back from spectator |
-| properties/NumEnemyVotesRequiredForKick | (int) number of enemy votes required to kick a player |
-| properties/NumFriendlyVotesRequiredForKick | (int) number of friendly votes required to kick a player |
-| properties/VoteKickBanSeconds | (int) seconds until a kicked player can re-join |
-| properties/MaxIdleTime | (float) seconds until a player is considerd idling and kicked |
-| properties/MinRequiredPlayersToStart | (int) minimum player required to start a match, setting it to 1 allows starting with a single player |
-| properties/PlayerSearchTime | (int) seconds until a round start after properties/MinRequiredPlayersToStart is fulfilled, setting it too low might cause client side issues during map change |
-| properties/TimeLimit | (int) minutes a round should last, only applies when playlist is used, non playlist should use the launch parameter instead |
-| properties/GoalScore | (int) score required to win, could mean very different things in different modes, for example it means the individual score to win in DM, and number of kills in TDM |
-| hacks/disableOnMatchIdle | (int) set to non 0 to disable intermission idle kick |
+| path                                       | description                                                                                                                                                          |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| properties/RandomBotNames/[0-18]           | (string) change one of the 19 possible bot names                                                                                                                     |
+| properties/GameRespawnTime                 | (float) seconds until a player can click respawn                                                                                                                     |
+| properties/GameForceRespawnTime            | (float) seconds until a player is automatically respawned                                                                                                            |
+| properties/GameSpectatorSwitchDelayTime    | (float) seconds until a player can switch back from spectator                                                                                                        |
+| properties/NumEnemyVotesRequiredForKick    | (int) number of enemy votes required to kick a player                                                                                                                |
+| properties/NumFriendlyVotesRequiredForKick | (int) number of friendly votes required to kick a player                                                                                                             |
+| properties/VoteKickBanSeconds              | (int) seconds until a kicked player can re-join                                                                                                                      |
+| properties/MaxIdleTime                     | (float) seconds until a player is considerd idling and kicked                                                                                                        |
+| properties/MinRequiredPlayersToStart       | (int) minimum player required to start a match, setting it to 1 allows starting with a single player                                                                 |
+| properties/PlayerSearchTime                | (int) seconds until a round start after properties/MinRequiredPlayersToStart is fulfilled, setting it too low might cause client side issues during map change       |
+| properties/TimeLimit                       | (int) minutes a round should last, only applies when playlist is used, non playlist should use the launch parameter instead                                          |
+| properties/GoalScore                       | (int) score required to win, could mean very different things in different modes, for example it means the individual score to win in DM, and number of kills in TDM |
+| hacks/disableOnMatchIdle                   | (int) set to non 0 to disable intermission idle kick                                                                                                                 |
+| mutators/DisableDepots                     | (int) set to non 0 to enable the `DisableDepots` mutator (**NOTE**: Only takes effect upon map change)                                                               |
+| mutators/DisableHRV                        | (int) set to non 0 to enable the `DisableHRV` mutator                                                                                                                |
+| mutators/DisableHeadShots                  | (int) set to non 0 to enable the `DisableHeadShots` mutator                                                                                                          |
+| mutators/StockLoadout                      | (int) set to non 0 to enable the `StockLoadout` mutator                                                                                                              |
+| mutators/DisablePrimaries                  | (int) set to non 0 to enable the `DisablePrimaries` mutator                                                                                                          |
+| mutators/DisableSecondaries                | (int) set to non 0 to enable the `DisableSecondaries` mutator                                                                                                        |
+| mutators/DisableGear                       | (int) set to non 0 to enable the `DisableGear` mutator                                                                                                               |
+| mutators/DisableTacticalGear               | (int) set to non 0 to enable the `DisableTacticalGear` mutator                                                                                                       |
+| mutators/DisableHealthRegen                | (int) set to non 0 to enable the `DisableHealthRegen` mutator                                                                                                        |
+| mutators/DisableElementalAmmo              | (int) set to non 0 to enable the `DisableElementalAmmo` mutator                                                                                                      |
+| mutators/HeadshotsOnly                     | (int) set to non 0 to enable the `HeadshotsOnly` mutator                                                                                                             |
 
 ## server information query
 
