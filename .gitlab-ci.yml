@@ -1,46 +1,20 @@
 variables:
-  msbuild: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin\MSBuild.exe'
-  cmake: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe'
-  PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/ServerUtils"
+  MODULE_NAME: server-utils
+
+include:
+  - project: blrevive/common
+    ref: main
+    file: 'ci/build_module.yml'
+  - project: blrevive/common
+    ref: main
+    file: 'ci/release_module.yml'
 
 stages:
   - build
   - release
 
-build_windows:
-  stage: build
-  only: 
-    - main
-    - beta
-  artifacts:
-    paths:
-      - build/Release
-    expire_in: 1 week
-  cache:
-    key:
-      files:
-        - CMakeLists.txt
-        - cmake/packages.cmake
-    paths:
-      - build/
-  script:
-    - '& "$cmake" -A Win32 -S . -B build/'
-    - '& "$msbuild" build/server-utils.sln /p:Configuration=Release /p:Platform=Win32'
-  tags:
-    - shared-windows
-    - windows
-    - windows-1809
+build:server-utils:
+  extends: .build:module
 
-
-release:
-  image: node
-  stage: release
-  before_script:
-    - apt-get update && apt-get install -y --no-install-recommends git-core ca-certificates
-    - npm install -g semantic-release @semantic-release/gitlab @semantic-release/changelog @semantic-release/exec
-    - chmod +x ./.gitlab/ci/*.sh
-  script:
-    - semantic-release
-  only:
-    - main
-    - beta
+release:server-utils:
+  extends: .release:module
