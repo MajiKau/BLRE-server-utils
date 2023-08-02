@@ -407,6 +407,8 @@ static void applyParametersToGameObject(AFoxGame *game, const ServerConfig &conf
 		game->FGRI->TimeLimit = game->TimeLimit;
 		game->FGRI->RemainingMinute = game->TimeLimit;
 		game->FGRI->RemainingTime = game->TimeLimit * 60;
+		game->MaxBotCount = game->GetIntOption(game->ServerOptions, "NumBots", game->MaxBotCount);
+		game->MaxPlayers = game->GetIntOption(game->ServerOptions, "MaxPlayers", game->MaxPlayers);
 	}
 
 	// More mutators in Engine_classes.h line 2382
